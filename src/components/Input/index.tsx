@@ -1,7 +1,9 @@
-import React, {InputHTMLAttributes} from 'react';
+import React, {InputHTMLAttributes, useEffect, useRef} from 'react';
 import { IconBaseProps } from 'react-icons'
+import { useField } from '@unform/core';
 
 import { Container } from './styles';
+import { promises } from 'fs';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -9,10 +11,22 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input: React.FC<InputProps> = ({ icon: Icon, ...rest}) => {
+  const inputRef = useRef(null);
+  // eslint-disable-next-line no-restricted-globals
+  const { fieldName, defaultValue, error, registerField } = useField(name);
+
+  useEffect(() => {
+    registerField({
+      name: fieldName,
+      ref: inputRef.current,
+      path: 'value',
+    })
+  }, [fieldName, registerField]);
+
   return (
     <Container>
       { Icon && <Icon size={20} />}
-      <input {...rest}/>
+      <input ref={inputRef} {...rest}/>
     </Container>
   )
 }
